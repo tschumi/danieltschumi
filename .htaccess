@@ -1,0 +1,4 @@
+# Files that are in the repo but are not part of the site.
+# Return 404 so they look like they do not exist.
+# /.well-known/ stays reachable for SSL certificate renewal.
+RedirectMatch 404 ^/(tools/|README\.md$|LICENSE$|\.(?!well-known/))
