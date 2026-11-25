@@ -1,12 +1,30 @@
 (function () {
-  var root = document.documentElement;  // saved theme is applied early by an inline snippet in <head>
+  /* ---------- Theme: no stored value = follow the system; "light"/"dark" = override ---------- */
+  // the saved override is applied before first paint by an inline snippet in <head>
+  var scheme = document.querySelector('meta[name="color-scheme"]');
+  var themeColors = document.querySelectorAll('meta[name="theme-color"]');
+  var lightBar = themeColors[0].content, darkBar = themeColors[1].content;
+  var systemDark = matchMedia("(prefers-color-scheme: dark)");
+
+  function applyTheme(override) {
+    scheme.content = override || "light dark";
+    // browser bar: pin both entries to the override, or restore the media-based pair
+    themeColors[0].content = override === "dark" ? darkBar : lightBar;
+    themeColors[1].content = override === "light" ? lightBar : darkBar;
+  }
+  applyTheme(scheme.content === "light dark" ? null : scheme.content);
+
   document.getElementById("theme").addEventListener("click", function () {
-    var dark = root.dataset.theme
-      ? root.dataset.theme === "dark"
-      : matchMedia("(prefers-color-scheme: dark)").matches;
-    root.dataset.theme = dark ? "light" : "dark";
-    try { localStorage.setItem("theme", root.dataset.theme); } catch (e) {}
+    var override = scheme.content === "light dark" ? null : scheme.content;
+    var shownDark = override ? override === "dark" : systemDark.matches;
+    var target = shownDark ? "light" : "dark";
+    // flipping back to what the system shows anyway means "follow the system again", so forget the override
+    if (target === (systemDark.matches ? "dark" : "light")) target = null;
+    applyTheme(target);
+    try { target ? localStorage.setItem("theme", target) : localStorage.removeItem("theme"); } catch (e) {}
   });
+  // keep other open tabs in sync
+  addEventListener("storage", function (e) { if (e.key === "theme") applyTheme(e.newValue); });
 
   var clock = document.getElementById("clock");
   function tick() {

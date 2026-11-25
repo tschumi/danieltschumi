@@ -14,35 +14,22 @@
   src: url("../fonts/JetBrainsMono-latin.woff2") format("woff2");
 }
 
+/* Colors follow the used color-scheme: the system preference by default,
+   or the toggle's override, which site.js writes into <meta name="color-scheme">. */
 :root {
-  --bg: #f4f1ec;
-  --surface: #ebe6de;
-  --ink: #161412;
-  --muted: #6b655d;
-  --line: #d6cfc4;
+  color-scheme: light dark;
+  --bg: light-dark(#f4f1ec, #131211);
+  --surface: light-dark(#ebe6de, #1c1a18);
+  --ink: light-dark(#161412, #f1ede6);
+  --muted: light-dark(#6b655d, #9a938a);
+  --line: light-dark(#d6cfc4, #2e2b27);
   --accent: #ff7f2a;
-  --accent-ink: #c2540c;   /* AA-contrast orange for text on light bg */
+  --accent-ink: light-dark(#c2540c, #ff9a55);   /* AA-contrast orange for text */
   --sans: "Inter Tight", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
   --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #131211;
-    --surface: #1c1a18;
-    --ink: #f1ede6;
-    --muted: #9a938a;
-    --line: #2e2b27;
-    --accent-ink: #ff9a55;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #131211;
-  --surface: #1c1a18;
-  --ink: #f1ede6;
-  --muted: #9a938a;
-  --line: #2e2b27;
-  --accent-ink: #ff9a55;
-}
+:root:has(> head > meta[name="color-scheme"][content="light"]) { color-scheme: light; }
+:root:has(> head > meta[name="color-scheme"][content="dark"]) { color-scheme: dark; }
 
 *, *::before, *::after { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
