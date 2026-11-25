@@ -36,7 +36,8 @@
   /* ---------- Avatar: eyes follow, blink, duck, curious brows ---------- */
   var svg = document.getElementById("avatar");
   var irises = Array.prototype.slice.call(svg.querySelectorAll(".iris"));
-  var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // read live, so switching the OS setting while the page is open takes effect immediately
+  var reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
   var MAX_X = 9, MAX_Y = 3;
   var target = { x: 0, y: 0 }, cur = { x: 0, y: 0 }, lastInput = 0;
 
@@ -56,13 +57,13 @@
 
   // look around on its own when nobody is moving the mouse
   setInterval(function () {
-    if (reduce || performance.now() - lastInput < 4000) return;
+    if (reduceMotion.matches || performance.now() - lastInput < 4000) return;
     var a = Math.random() * Math.PI * 2, r = Math.random() < .3 ? 0 : 1;
     target.x = Math.cos(a) * MAX_X * r; target.y = Math.sin(a) * MAX_Y * r;
   }, 2200);
 
   (function loop() {
-    var k = reduce ? 1 : .18;
+    var k = reduceMotion.matches ? 1 : .18;
     cur.x += (target.x - cur.x) * k; cur.y += (target.y - cur.y) * k;
     // snap to whole pixels: pupils sit left, centre or right (2 art pixels = 10 units)
     var px = cur.x > 3 ? 10 : cur.x < -3 ? -10 : 0;
@@ -81,7 +82,7 @@
   }
   (function scheduleBlink() {
     setTimeout(function () {
-      if (!reduce && !svg.classList.contains("ducked")) blink(Math.random() < .25);
+      if (!reduceMotion.matches && !svg.classList.contains("ducked")) blink(Math.random() < .25);
       scheduleBlink();
     }, 2500 + Math.random() * 3500);
   })();
